@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let persons = [
   { 
     "id": 1,
@@ -24,6 +26,10 @@ let persons = [
   }
 ]
 
+function genRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
@@ -33,6 +39,26 @@ app.get('/info', (request, response) => {
   response.send(`<p>Phonebook has info for ${persons.length} ${persons.length === 1 ? 'person' : 'people'}</p><p>${date}</p>`)
 })
 
+/*--------------------------------------------------
+ # Create a new person in the phonebook
+ --------------------------------------------------*/
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+  console.log(body)
+  
+  const person = {
+    id: genRandomInt(99999999),
+    name: body.name,
+    number: body.number,
+  }
+
+  persons = persons.concat(person)
+  response.json(person)
+})
+
+/*--------------------------------------------------
+ # Get single person
+ --------------------------------------------------*/
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   const person = persons.find(person => person.id === id)
