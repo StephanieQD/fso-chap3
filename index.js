@@ -46,6 +46,28 @@ app.post('/api/persons', (request, response) => {
   const body = request.body
   console.log(body)
   
+  let errorMsg = '';
+
+  if ( ! body.name ) {
+    errorMsg += 'Name is missing. '
+  }
+
+  if ( ! body.number ) {
+    errorMsg += 'Number is missing. '
+  }
+
+  const dupPerson = persons.find(person => person.name === body.name)
+
+  if (dupPerson) {
+    errorMsg += 'Name must be unique. '
+  }
+
+  if ( errorMsg.length > 0 ) {
+    return response.status(400).json({ 
+      error: errorMsg
+    })
+  }
+  
   const person = {
     id: genRandomInt(99999999),
     name: body.name,
