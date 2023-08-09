@@ -1,12 +1,15 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
 app.use(express.json())
 app.use(cors())
 
 app.use(express.static('new_build'))
+
 
 morgan.token("reqbody", function (req, res) {
   return JSON.stringify(req.body)
@@ -46,7 +49,10 @@ function genRandomInt(max) {
 }
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  Person.find({}).then(people => {
+    console.log(people)
+    response.json(people)
+  })
 })
 
 app.get('/info', (request, response) => {
