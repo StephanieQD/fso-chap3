@@ -44,10 +44,6 @@ let persons = [
   }
 ]
 
-function genRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(people => {
     console.log(people)
@@ -77,26 +73,20 @@ app.post('/api/persons', (request, response) => {
     errorMsg += 'Number is missing. '
   }
 
-  const dupPerson = persons.find(person => person.name === body.name)
-
-  if (dupPerson) {
-    errorMsg += 'Name must be unique. '
-  }
-
   if ( errorMsg.length > 0 ) {
     return response.status(400).json({ 
       error: errorMsg
     })
   }
   
-  const person = {
-    id: genRandomInt(99999999),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  }
+  })
 
-  persons = persons.concat(person)
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 /*--------------------------------------------------
