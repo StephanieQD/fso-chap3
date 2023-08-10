@@ -5,11 +5,9 @@ const morgan = require('morgan')
 const cors = require('cors')
 const Person = require('./models/person')
 
+app.use(express.static('new_build'))
 app.use(express.json())
 app.use(cors())
-
-app.use(express.static('new_build'))
-
 
 morgan.token("reqbody", function (req, res) {
   return JSON.stringify(req.body)
@@ -93,21 +91,37 @@ app.post('/api/persons', (request, response) => {
  # Get single person
  --------------------------------------------------*/
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
 })
 
+/*--------------------------------------------------
+ # Delete an item
+ --------------------------------------------------*/
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      console.log(result)
+      response.status(204).end()
+    })
+    .catch((error => console.log(error)))
 })
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
