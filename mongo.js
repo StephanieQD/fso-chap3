@@ -22,14 +22,14 @@ const Person = mongoose.model('Person', personSchema)
 
 if (process.argv.length < 5) {
   Person
-  .find({})
-  .then(people => {
-    console.log("phonebook:")
-    people.forEach((person) => {
-      console.log(`${person.name} ${person.number}`)
+    .find({})
+    .then(people => {
+      console.log('phonebook:')
+      people.forEach((person) => {
+        console.log(`${person.name} ${person.number}`)
+      })
+      mongoose.connection.close()
     })
-    mongoose.connection.close()
-  })
 } else {
   const person = new Person({
     name: process.argv[3],

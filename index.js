@@ -9,13 +9,13 @@ app.use(express.static('new_build'))
 app.use(express.json())
 app.use(cors())
 
-morgan.token("reqbody", function (req, res) {
+morgan.token('reqbody', function (req) {
   return JSON.stringify(req.body)
 })
 
 app.use(
   morgan(
-    ":method :url :status :res[content-length] - :response-time ms :reqbody"
+    ':method :url :status :res[content-length] - :response-time ms :reqbody'
   )
 )
 
@@ -33,7 +33,7 @@ app.get('/api/persons', (request, response) => {
  # Get info on count of people in the phonebook
  --------------------------------------------------*/
 app.get('/info', (request, response) => {
-  const date = new Date;
+  const date = new Date
   Person.find({}).then(people => {
     console.log(people)
     response.send(`<p>Phonebook has info for ${people.length} ${people.length === 1 ? 'person' : 'people'}</p><p>${date}</p>`)
@@ -46,8 +46,8 @@ app.get('/info', (request, response) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
   console.log(body)
-  
-  let errorMsg = '';
+
+  let errorMsg = ''
 
   if ( ! body.name ) {
     errorMsg += 'Name is missing. '
@@ -58,11 +58,11 @@ app.post('/api/persons', (request, response, next) => {
   }
 
   if ( errorMsg.length > 0 ) {
-    return response.status(400).json({ 
+    return response.status(400).json({
       error: errorMsg
     })
   }
-  
+
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -115,14 +115,14 @@ app.put('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndUpdate(
     request.params.id, person, { new: true, runValidators: true, context: 'query' }
   )
-  .then(updatedPerson => {
-    response.json(updatedPerson)
-  })
-  .catch(error => next(error))
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
-  res.status(404).send({ error: "unknown endpoint" })
+  res.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
